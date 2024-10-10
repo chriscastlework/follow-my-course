@@ -7,6 +7,11 @@ import { notFound } from "next/navigation";
 
 const HomeScreen = async () => {
 	const admin = await prisma.user.findUnique({ where: { email: process.env.ADMIN_EMAIL } });
+	
+	console.log("Loading home screen...");
+
+	console.log("admin", admin);
+	
 	const user = await getUserProfileAction();
 
 	if (!user) return notFound();

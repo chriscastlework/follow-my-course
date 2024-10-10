@@ -13,7 +13,7 @@ const HeroSection = () => {
 				/>
 				<div className='flex flex-col gap-2 px-4 xl:ml-40 text-center md:text-start font-semibold'>
 					<Image
-						src={"/onlyhorse.png"}
+						src={"/follow-my-course.png"}
 						alt='OnlyHorse Logo'
 						width={769}
 						height={182}

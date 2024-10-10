@@ -16,6 +16,8 @@ const webhookSecret =
 		: process.env.STRIPE_WEBHOOK_SECRET_LIVE_KEY!;
 
 export async function POST(req: Request) {
+
+
 	const body = await req.text();
 	const signature = headers().get("stripe-signature");
 
@@ -36,9 +38,13 @@ export async function POST(req: Request) {
 	const data = event.data;
 	const eventType = event.type;
 
+	console.log(`Received strip webhook${eventType}`);
+
 	try {
 		switch (eventType) {
-			case "checkout.session.completed": {
+			case "checkout.session.completed":
+			case "invoice.payment_succeeded": {
+
 				const session = await stripe.checkout.sessions.retrieve((data.object as Stripe.Checkout.Session).id, {
 					expand: ["line_items", "customer_details"],
 				});

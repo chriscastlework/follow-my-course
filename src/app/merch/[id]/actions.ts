@@ -33,7 +33,7 @@ export async function createCheckoutSessionAction({ productId, size }: { product
 		line_items: [
 			{
 				price_data: {
-					currency: "usd",
+					currency: "myr",
 					product_data: {
 						name: product.name,
 						images: [product.image],
@@ -50,9 +50,9 @@ export async function createCheckoutSessionAction({ productId, size }: { product
 		mode: "payment",
 		success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/purchase-success?orderId=${order.id}`,
 		cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/merch/${product.id}`,
-		shipping_address_collection: {
-			allowed_countries: ["US"],
-		},
+		// shipping_address_collection: {
+		// 	allowed_countries: ["US"],
+		// },
 		customer: customer.id,
 		// expires at 30 minutes(min value is 30 minutes)
 		expires_at: Math.floor(Date.now() / 1000) + 60 * 30,

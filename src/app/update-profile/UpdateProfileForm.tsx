@@ -14,6 +14,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 const UpdateProfileForm = () => {
 	const [mediaUrl, setMediaUrl] = useState("");
+	const [handel, setHandel] = useState("");
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [profileImage, setProfileImage] = useState("");
@@ -45,7 +46,7 @@ const UpdateProfileForm = () => {
 
 	const handleUpdateProfile = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		updateProfile({ name, image: mediaUrl });
+		updateProfile({ name, image: mediaUrl, handel });
 	};
 
 	useEffect(() => {
@@ -73,6 +74,14 @@ const UpdateProfileForm = () => {
 					</div>
 
 					<form onSubmit={(e) => handleUpdateProfile(e)}>
+					<Label>Name</Label>
+						<Input
+							placeholder='Enter your Handle'
+							value={handel}
+							className='my-2'
+							onChange={(e) => setHandel(e.target.value)}
+						/>
+
 						<Label>Name</Label>
 						<Input
 							placeholder='Enter your name'
