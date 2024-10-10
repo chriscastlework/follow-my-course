@@ -15,11 +15,6 @@ const Page = () => {
 	});
 
 	useEffect(() => {
-		// first version before the stripe integration
-		// if (data?.success || data?.success === false) {
-		// 	router.push("/");
-		// }
-
 		const stripeUrl = localStorage.getItem("stripeRedirectUrl");
 		if (stripeUrl && user?.email && !checkingAuth) {
 			localStorage.removeItem("stripeRedirectUrl");
