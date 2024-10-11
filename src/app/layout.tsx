@@ -10,7 +10,7 @@ import { Toaster } from "@/components/ui/toaster";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-	title: "OnlyHorse - E-commerce Store",
+	title: "Follow My Course",
 	description:
 		"OnlyHorse is a platform for horse lovers which includes a wide range of exclusive content and merchandise.",
 };

@@ -10,13 +10,11 @@ import ReceiptEmail from "@/emails/ReceiptEmail";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const webhookSecret =
-	process.env.NODE_ENV === "development"
-		? process.env.STRIPE_WEBHOOK_SECRET_DEV_KEY!
-		: process.env.STRIPE_WEBHOOK_SECRET_LIVE_KEY!;
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
 export async function POST(req: Request) {
 
+	console.log("Received stripe webhook");
 
 	const body = await req.text();
 	const signature = headers().get("stripe-signature");
