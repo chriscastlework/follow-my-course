@@ -208,7 +208,7 @@ export default function Pricing() {
 											}
 										}}
 									>
-										<Link href={monthlyUrl}>{tier.cta}</Link>
+											<Link href={"/api/auth/login"}>{tier.cta}</Link>
 									</Button>
 								</div>
 							</div>
