@@ -2,13 +2,10 @@
 import { Button } from "@/components/ui/button";
 import { RegisterLink, LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { useSearchParams } from "next/navigation";
-import { use, useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 
 const AuthButtons = () => {
-
-
-
 	const [loading, setLoading] = useState(false);
 	const [redirectUrl, setRedirectUrl] = useState<string>('');
 	const searchParams = useSearchParams();
@@ -33,4 +30,13 @@ const AuthButtons = () => {
 		</div>
 	);
 };
-export default AuthButtons;
+
+const AuthButtonsWithSuspense = () => {
+	return (
+		<Suspense fallback={<div>Loading...</div>}>
+			<AuthButtons />
+		</Suspense>
+	);
+};
+
+export default AuthButtonsWithSuspense;
