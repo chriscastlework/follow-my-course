@@ -20,7 +20,7 @@ const AuthButtons = () => {
 
 	return (
 		<div className='flex gap-3 flex-1 md:flex-row flex-col'>
-			<RegisterLink className='flex-1' onClick={() => setLoading(true)}>
+			<RegisterLink className='flex-1' onClick={() => setLoading(true)} postLoginRedirectURL={`${process.env.NEXT_PUBLIC_BASE_URL}${redirectUrl}`}>
 				<Button className='w-full' variant={"outline"} disabled={loading}>
 					Sign up
 				</Button>
