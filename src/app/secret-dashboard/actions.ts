@@ -3,6 +3,82 @@
 import prisma from "@/db/prisma";
 import { centsToDollars } from "@/lib/utils";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { checkAuthStatus } from "../auth/callback/actions";
+
+type EbookArgs = {
+	title: string;
+	description: string;
+	price: string;
+	mediaUrl: string;
+}
+  
+export async function createEbookAction({ title, description, price, mediaUrl }: EbookArgs) {
+	const { isAdmin, user }  = await checkAuthStatus();
+  
+	if (!isAdmin) {
+	  throw new Error("Unauthorized");
+	}
+  
+	if (!title || !description || !price || !mediaUrl) {
+	  throw new Error("Please provide all the required fields");
+	}
+  
+	const priceInCents = Math.round(parseFloat(price) * 100);
+  
+	if (isNaN(priceInCents)) {
+	  throw new Error("Price must be a valid number");
+	}
+  
+	const newEbook = await prisma.ebook.create({
+	  data: {
+		title,
+		description,
+		price: priceInCents,
+		userId: user!.id,
+		mediaUrl,
+	  },
+	});
+  
+	return { success: true, ebook: newEbook };
+  }
+
+type CourseArgs = {
+	title: string;
+	description: string;
+	priceYear: string;
+	priceMonth: string;
+}
+  
+export async function createCourseAction({ title, description, priceYear, priceMonth }: CourseArgs) {
+	const { isAdmin, user }  = await checkAuthStatus();
+  
+	if (!isAdmin) {
+	  throw new Error("Unauthorized");
+	}
+  
+	if (!title || !description || !priceYear || !priceMonth) {
+	  throw new Error("Please provide all the required fields");
+	}
+  
+	const priceYearInCents = Math.round(parseFloat(priceYear) * 100);
+	const priceMonthInCents = Math.round(parseFloat(priceMonth) * 100);
+  
+	if (isNaN(priceYearInCents) || isNaN(priceMonthInCents)) {
+	  throw new Error("Price must be a valid number");
+	}
+  
+	const newCourse = await prisma.course.create({
+	  data: {
+		title,
+		description,
+		priceYear: priceYearInCents,
+		priceMonth: priceMonthInCents,
+		userId: user!.id,
+	  },
+	});
+  
+	return { success: true, course: newCourse };
+  }
 
 type PostArgs = {
 	text: string;
@@ -12,9 +88,9 @@ type PostArgs = {
 };
 
 export async function createPostAction({ isPublic, mediaUrl, mediaType, text }: PostArgs) {
-	const admin = await checkIfAdmin();
+	const { isAdmin, user }  = await checkAuthStatus();
 
-	if (!admin) {
+	if (!isAdmin) {
 		throw new Error("Unauthorized");
 	}
 
@@ -24,7 +100,7 @@ export async function createPostAction({ isPublic, mediaUrl, mediaType, text }: 
 			mediaUrl,
 			mediaType,
 			isPublic,
-			userId: admin.id,
+			userId: user!.id,
 		},
 	});
 
@@ -32,7 +108,7 @@ export async function createPostAction({ isPublic, mediaUrl, mediaType, text }: 
 }
 
 export async function getAllProductsAction() {
-	const isAdmin = await checkIfAdmin();
+	const { isAdmin }  = await checkAuthStatus();
 
 	if (!isAdmin) {
 		throw new Error("Unauthorized");
@@ -50,7 +126,7 @@ type ProductArgs = {
 };
 
 export async function addNewProductToStoreAction({ name, image, price }: ProductArgs) {
-	const isAdmin = await checkIfAdmin();
+	const { isAdmin }  = await checkAuthStatus();
 
 	if (!isAdmin) {
 		throw new Error("Unauthorized");
@@ -78,7 +154,7 @@ export async function addNewProductToStoreAction({ name, image, price }: Product
 }
 
 export async function toggleProductArchiveAction(productId: string) {
-	const isAdmin = await checkIfAdmin();
+	const isAdmin = await checkAuthStatus();
 	if (!isAdmin) {
 		throw new Error("Unauthorized");
 	}
@@ -170,15 +246,4 @@ export async function getDashboardData() {
 		recentSales,
 		recentSubscriptions,
 	};
-}
-
-async function checkIfAdmin() {
-	const { getUser } = getKindeServerSession();
-	const user = await getUser();
-
-	const isAdmin = user?.email === process.env.ADMIN_EMAIL;
-
-	if (!user || !isAdmin) return false;
-
-	return user;
 }

@@ -108,3 +108,9 @@ This project is built for "OnlyEducational" purposes. 😳
 - 11:07:00 - Detailed Deployment Guide
 
 ### I'll see you in the next one! 🚀
+
+## Updating the database
+
+### If you require new fields in the database use this command to update the tables
+
+use npx prisma db push

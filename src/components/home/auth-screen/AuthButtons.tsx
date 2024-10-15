@@ -12,12 +12,15 @@ const AuthButtons = () => {
 
 	useEffect(() => {
 		const redirectUrl = searchParams.get("redirectUrl");
-		if (redirectUrl) setRedirectUrl(redirectUrl);
+		if (redirectUrl) {
+			setRedirectUrl(redirectUrl); // set for log in
+			localStorage.setItem("redirectUrl", redirectUrl); // sigh up needs to create user first
+		};
 	}, [searchParams]);
 
 	return (
 		<div className='flex gap-3 flex-1 md:flex-row flex-col'>
-			<RegisterLink className='flex-1' onClick={() => setLoading(true)} postLoginRedirectURL={`${process.env.NEXT_PUBLIC_BASE_URL}${redirectUrl}`}>
+			<RegisterLink className='flex-1' onClick={() => setLoading(true)}>
 				<Button className='w-full' variant={"outline"} disabled={loading}>
 					Sign up
 				</Button>

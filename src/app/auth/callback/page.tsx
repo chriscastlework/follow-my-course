@@ -7,18 +7,22 @@ import { useRouter } from "next/navigation";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
 const Page = () => {
+
+	console.log('redirected to auth callback');
 	const router = useRouter();
 	const { user, isLoading: checkingAuth } = useKindeBrowserClient();
 	const { data } = useQuery({
-		queryKey: ["authCheck"],
+		queryKey: ["authCheck2"],
 		queryFn: async () => await checkAuthStatus(),
 	});
 
 	useEffect(() => {
-		const stripeUrl = localStorage.getItem("stripeRedirectUrl");
-		if (stripeUrl && user?.email && !checkingAuth) {
-			localStorage.removeItem("stripeRedirectUrl");
-			window.location.href = stripeUrl + "?prefilled_email=" + user.email;
+		const redirectUrl = localStorage.getItem("redirectUrl");
+		if (redirectUrl && user?.email && !checkingAuth) {
+			localStorage.removeItem("redirectUrl");
+			// window.location.href = stripeUrl + "?prefilled_email=" + user.email;
+			console.log("Redirecting to:", redirectUrl);
+			router.push(redirectUrl);
 		} else if (!user && !checkingAuth) {
 			router.push("/");
 		}

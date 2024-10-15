@@ -9,7 +9,7 @@ export async function checkAuthStatus() {
 
 	if (!user) return { success: false };
 
-	const existingUser = await prisma.user.findUnique({ where: { id: user.id } });
+	let existingUser = await prisma.user.findUnique({ where: { id: user.id } });
 
 	// sign up
 	if (!existingUser) {
@@ -19,9 +19,14 @@ export async function checkAuthStatus() {
 				email: user.email!,
 				name: user.given_name + " " + user.family_name,
 				image: user.picture,
+				isAdmin: false,
 			},
 		});
+
+		existingUser = await prisma.user.findUnique({ where: { id: user.id } });
 	}
 
-	return { success: true };
+	const isAdmin = existingUser?.isAdmin || false;	
+
+	return { success: true, user: existingUser, isAdmin };
 }

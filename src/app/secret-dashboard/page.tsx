@@ -3,12 +3,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ContentTab from "./content/ContentTab";
 import StoreTab from "./store/StoreTab";
 import AnalyticsTab from "./analytics/AnalyticsTab";
+import CourseTab from "./course/CourseTab";
+import EbookTab from "./ebook/EbookTab";
 
 const Page = () => {
 	return (
 		<BaseLayout renderRightPanel={false}>
 			<Tabs defaultValue='content' className='w-full mx-auto my-10 px-2 md:px-10'>
 				<TabsList className='flex flex-col md:flex-row w-full md:w-3/4 mx-auto h-auto'>
+					<TabsTrigger value='course' className='w-full md:w-auto'>
+						Course
+					</TabsTrigger>
+					<TabsTrigger value='ebook' className='w-full md:w-auto'>
+						Ebook
+					</TabsTrigger>
 					<TabsTrigger value='content' className='w-full md:w-auto'>
 						Content
 					</TabsTrigger>
@@ -20,6 +28,12 @@ const Page = () => {
 					</TabsTrigger>
 				</TabsList>
 
+				<TabsContent value='ebook'>
+					<EbookTab />
+				</TabsContent>
+				<TabsContent value='course'>
+					<CourseTab />
+				</TabsContent>
 				<TabsContent value='content'>
 					<ContentTab />
 				</TabsContent>

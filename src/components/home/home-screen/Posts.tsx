@@ -16,7 +16,6 @@ const Posts = ({ isSubscribed, admin }: { isSubscribed: boolean; admin: User }) 
 		<div>
 			{!isLoading &&
 				posts?.map((post) => <Post key={post.id} post={post} admin={admin} isSubscribed={isSubscribed} />)}
-
 			{isLoading && (
 				<div className='mt-10 px-3 flex flex-col gap-10'>
 					{[...Array(3)].map((_, i) => (
