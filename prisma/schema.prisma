@@ -7,24 +7,53 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id           String  @id @default(cuid())
+  email        String  @unique
+  name         String
+  image        String?
+  customerId   String? @unique // stripe customer id
+  handle       String? @unique // Fixed typo: "handel" to "handle"
+  isCreator      Boolean @default(false) @map("isCreator")
+  stripeProductId String? @unique
+
+  createdCourses    Course[]         @relation("CreatedCourses")
+  purchasedCourses  Course[]         @relation("PurchasedCourses")
+
+  createdEbooks     Ebook[]          @relation("CreatedEbooks")
+  purchasedEbooks   Ebook[]          @relation("PurchasedEbooks")
+
+  subscriptionsTo   Subscription[]   @relation("Subscriber")
+  subscribers       Subscription[]   @relation("Creator")
+  orders            Order[]
+  comments          Comment[]
+  likes             Like[]
+  posts             Post[]           // Added missing relation to Post model
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Course {
   id          String  @id @default(cuid())
-  userId      String
+  stripeProductId String? @unique
+  creatorId String  @map("userId")
   title       String
   description String
-  priceYear   Int
-  priceMonth  Int
+  price       Int
   isArchived  Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  user           User             @relation("CreatedCourses", fields: [creatorId], references: [id])
+  purchasedBy    User[]           @relation("PurchasedCourses")
 }
 
 model Ebook {
   id          String  @id @default(cuid())
-  userId      String
+  stripeProductId String? @unique
+  creatorId String  @map("userId")
   title       String
   description String
   price       Int
@@ -34,28 +63,30 @@ model Ebook {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  user           User             @relation("CreatedEbooks", fields: [creatorId], references: [id])
+  purchasedBy    User[]           @relation("PurchasedEbooks")
 }
 
-model User {
-  id           String  @id @default(cuid())
-  email        String  @unique
-  name         String
-  image        String?
-  isSubscribed Boolean @default(false)
-  customerId   String? @unique // stripe customer id
-  handel       String? @unique
-  isAdmin      Boolean @default(false)
+model Subscription {
+  id                String   @id @default(cuid())
+  creatorId         String
+  subscriberId  String   @map("subscriberId")
+  planId            String   // Added planId field
+  planType          PlanType
+  price             Int
+  startDate         DateTime @default(now())
+  endDate           DateTime
 
-  subscription Subscription?
-  orders       Order[]
-  comments     Comment[]
-  likes        Like[]
-  courses      Course[]
-  Ebook        Ebook[]
+  creator    User     @relation("Creator", fields: [creatorId], references: [id])
+  subscriber User     @relation("Subscriber", fields: [subscriberId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@index([creatorId])
+  @@index([subscriberId])
+}
+
+enum PlanType {
+  MONTHLY
+  YEARLY
 }
 
 model Post {
@@ -67,11 +98,14 @@ model Post {
   likes     Int     @default(0)
   isPublic  Boolean @default(false)
 
+  user      User      @relation(fields: [userId], references: [id])
   comments  Comment[]
   likesList Like[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
 
 model Comment {
@@ -101,54 +135,27 @@ model Like {
   @@index([userId])
 }
 
-model Subscription {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  planId    String
-  price     Int      @default(0)
-  startDate DateTime @default(now())
-  endDate   DateTime
-
-  user User @relation(fields: [userId], references: [id])
-
-  @@index([userId])
-}
-
 model Product {
   id         String  @id @default(cuid())
   name       String
   image      String
   price      Int
   isArchived Boolean @default(false)
-
-  orders Order[]
+  orders     Order[]
 }
 
 model Order {
-  id                String   @id @default(cuid())
-  userId            String
-  productId         String
-  price             Int
-  isPaid            Boolean  @default(false)
-  size              String
-  orderDate         DateTime @default(now())
-  shippingAddressId String?
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  price     Int
+  isPaid    Boolean  @default(false)
+  size      String
+  orderDate DateTime @default(now())
 
-  user            User             @relation(fields: [userId], references: [id])
-  product         Product          @relation(fields: [productId], references: [id])
-  shippingAddress ShippingAddress? @relation(fields: [shippingAddressId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
 
   @@index([userId])
   @@index([productId])
-}
-
-model ShippingAddress {
-  id         String  @id @default(cuid())
-  address    String
-  city       String
-  state      String?
-  postalCode String
-  country    String
-
-  order Order[]
 }

@@ -6,7 +6,13 @@ import { User } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { getPostsAction } from "./actions";
 
-const Posts = ({ isSubscribed, admin }: { isSubscribed: boolean; admin: User }) => {
+
+type PostsProps = {
+	isSubscribed: boolean;
+	admin: User;
+};
+  
+const Posts = ({ isSubscribed, admin }: PostsProps) => {
 	const { data: posts, isLoading } = useQuery({
 		queryKey: ["posts"],
 		queryFn: async () => await getPostsAction(),
