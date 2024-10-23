@@ -1,8 +1,10 @@
 import EBookForm from "@/components/forms/EBookForm";
+import { getCurrentUser } from "@/lib/data/user";
+import { QueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 
-const Home = () => {
+const Home = async () => {
   return (
     <div className="flex h-screen max-h-screen">
       {/* {isAdmin && <PasskeyModal />} */}

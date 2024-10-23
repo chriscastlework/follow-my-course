@@ -8,6 +8,12 @@ import { Toaster } from "@/components/ui/toaster";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { cn } from "@/lib/utils";
 import TopMenu from "@/components/layout/TopMenu";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
+import { getCurrentUser } from "@/lib/data/user";
 
 const fontSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -21,11 +27,17 @@ export const metadata: Metadata = {
     "Follow My Course is a platform where you can learn from the best instructors in the world. We offer a wide range of courses from programming to design.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const queryClient = new QueryClient();
+  await queryClient.prefetchQuery({
+    queryKey: ["user"],
+    queryFn: getCurrentUser,
+  });
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -33,18 +45,18 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="dark"
           disableTransitionOnChange
         >
-          {/* <div className="dark:bg-dark-300 bg-light-300"> */}
           <div className="flex-1 pt-12">
             <TanStackProvider>
-              <TopMenu />
-              {children}
+              <HydrationBoundary state={dehydrate(queryClient)}>
+                <TopMenu />
+                {children}
+              </HydrationBoundary>
             </TanStackProvider>
           </div>
           <Footer />
-          {/* </div> */}
         </ThemeProvider>
         <Toaster />
       </body>

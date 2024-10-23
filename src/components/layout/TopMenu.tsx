@@ -13,6 +13,7 @@ import {
   RegisterLink,
   useKindeBrowserClient,
 } from "@kinde-oss/kinde-auth-nextjs";
+import { useQuery } from "@tanstack/react-query";
 
 const navigation = [
   {
@@ -39,6 +40,11 @@ export default function TopMenu() {
   const pathname = usePathname();
   const { isAuthenticated } = useKindeBrowserClient();
 
+  const { isPending, error, data } = useQuery({
+    queryKey: ["user"],
+    queryFn: () => fetch("/api/user").then((res) => res.json()),
+  });
+
   const toggleNavigation = () => {
     setOpenNavigation(!openNavigation);
   };
@@ -48,12 +54,17 @@ export default function TopMenu() {
     setOpenNavigation(false);
   };
 
+  if (isPending) return "Loading...";
+
+  if (error) return "An error has occurred: " + error.message;
+
   return (
     <div
       className={`fixed top-0 left-0 w-full z-50  border-b border-n-6 lg:bg-n-8/90 lg:backdrop-blur-sm ${
         openNavigation ? "bg-n-8" : "bg-n-8/90 backdrop-blur-sm"
       }`}
     >
+      <h1>User {data?.name}</h1>
       <div className="flex items-center px-5 lg:px-7.5 xl:px-10 max-lg:py-4">
         <a className="block w-[12rem] xl:mr-8" href="#hero">
           <img

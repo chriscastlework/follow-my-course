@@ -2,24 +2,44 @@ import prisma from "@/db/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { storage } from "@/lib/appWriteConfig";
 import { ID } from "node-appwrite";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { getCurrentUser, getUserById } from "@/lib/data/user";
 export async function GET(req: NextRequest) {
+  console.log("GET USER request received");
   const urlObj = new URL(req.url!);
   const searchParams = urlObj.searchParams;
   const id = searchParams.get("id");
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+  console.log(user);
 
-  if (!id) {
-    return NextResponse.json({ message: "User ID is required" });
+  if (!user) {
+    return NextResponse.json(
+      { message: "User must be authenticated" },
+      { status: 401 }
+    );
   }
 
-  // Fetch the user from the database
-  const existingUser = await prisma.user.findUnique({ where: { id } });
+  try {
+    let existingUser;
+    if (!id) {
+      existingUser = await getCurrentUser();
+    } else {
+      existingUser = await getUserById(id);
+    }
 
-  if (!existingUser) {
-    return NextResponse.json({ message: "User not found" });
+    if (!existingUser) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(existingUser);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return NextResponse.json(
+      { message: "Error fetching user" },
+      { status: 500 }
+    );
   }
-
-  // Return the user data
-  return NextResponse.json(existingUser);
 }
 
 // export async function POST(req: NextRequest) {
