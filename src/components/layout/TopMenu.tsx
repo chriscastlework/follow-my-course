@@ -14,6 +14,7 @@ import {
   useKindeBrowserClient,
 } from "@kinde-oss/kinde-auth-nextjs";
 import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 
 const navigation = [
   {
@@ -42,7 +43,12 @@ export default function TopMenu() {
 
   const { isPending, error, data } = useQuery({
     queryKey: ["user"],
-    queryFn: () => fetch("/api/user").then((res) => res.json()),
+    queryFn: () => {
+      console.log("fetching user");
+      var thing = fetch("/api/user").then((res) => res.json());
+      console.log("got user", thing);
+      return thing;
+    },
   });
 
   const toggleNavigation = () => {
@@ -64,16 +70,16 @@ export default function TopMenu() {
         openNavigation ? "bg-n-8" : "bg-n-8/90 backdrop-blur-sm"
       }`}
     >
-      <h1>User {data?.name}</h1>
       <div className="flex items-center px-5 lg:px-7.5 xl:px-10 max-lg:py-4">
-        <a className="block w-[12rem] xl:mr-8" href="#hero">
-          <img
-            src="/public/assets/logo.png"
-            width={190}
-            height={40}
-            alt="Brainwave"
+        <Link className="block w-[12rem] xl:mr-8" href="/">
+          <Image
+            src="/logo-sm.jpg"
+            width={60}
+            height={60}
+            alt="Follow my course"
+            className="rounded-full object-cover"
           />
-        </a>
+        </Link>
 
         <nav
           className={`${
