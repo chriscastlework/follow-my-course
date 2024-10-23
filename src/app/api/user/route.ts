@@ -1,9 +1,9 @@
-import prisma from "@/db/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { storage } from "@/lib/appWriteConfig";
 import { ID } from "node-appwrite";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { getCurrentUser, getUserById } from "@/lib/data/user";
+
 export async function GET(req: NextRequest) {
   console.log("GET USER request received");
   const urlObj = new URL(req.url!);
@@ -29,7 +29,10 @@ export async function GET(req: NextRequest) {
     }
 
     if (!existingUser) {
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
+      return NextResponse.json(
+        { message: "User not with request id was not found" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json(existingUser);
@@ -41,21 +44,6 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-
-// export async function POST(req: NextRequest) {
-//   const body = await req.json();
-//   console.log(body);
-
-//   const result = await users.create(
-//     ID.unique(), // userId
-//     "email@example.com", // email (optional)
-//     "+12065550100", // phone (optional)
-//     "something*123", // password (optional)
-//     "Chris" // name (optional)
-//   );
-
-//   return NextResponse.json({ message: "User created" });
-// }
 
 export async function POST(request: NextRequest) {
   try {

@@ -8,7 +8,6 @@ import Link from "next/link";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toggleProductArchiveAction } from "@/app/creator/actions";
 import { useToast } from "./ui/use-toast";
-import { useUser } from "@/lib/useUser";
 
 const ProductCard = ({
   product,
@@ -19,8 +18,6 @@ const ProductCard = ({
 }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-
-  const { user } = useUser();
 
   const { mutate: toggleArchive, isPending } = useMutation({
     mutationKey: ["toggleArchive"],

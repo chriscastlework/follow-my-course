@@ -69,12 +69,13 @@ async function createStripeProduct(
   return stripeProduct.id;
 }
 
-export async function createEbookAction({
+export const createEbookActionUsingAppwrite = async ({
   title,
   description,
   price,
   mediaUrl,
-}: EbookArgs) {
+}: EbookArgs) => {
+  console.log("testing create ebook action is running on server");
   const user = await checkAdminAuthorization();
   validateRequiredFields(
     { title, description, price, mediaUrl },
@@ -99,7 +100,40 @@ export async function createEbookAction({
   });
 
   return { success: true, ebook: newEbook };
-}
+};
+
+export const createEbookAction = async ({
+  title,
+  description,
+  price,
+  mediaUrl,
+}: EbookArgs) => {
+  console.log("testing create ebook action is running on server");
+  const user = await checkAdminAuthorization();
+  validateRequiredFields(
+    { title, description, price, mediaUrl },
+    "Please provide all the required fields"
+  );
+  const priceInCents = convertPriceToCents(price);
+  const stripeProductId = await createStripeProduct(
+    title,
+    description,
+    priceInCents
+  );
+
+  const newEbook = await prisma.ebook.create({
+    data: {
+      title,
+      description,
+      price: priceInCents,
+      creatorId: user!.id,
+      stripeProductId,
+      mediaUrl,
+    },
+  });
+
+  return { success: true, ebook: newEbook };
+};
 
 export async function createCourseAction({
   title,

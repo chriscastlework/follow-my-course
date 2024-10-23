@@ -15,6 +15,7 @@ import {
 } from "@kinde-oss/kinde-auth-nextjs";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
+import { clientGetUser } from "@/lib/clientActions/getUserAction";
 
 const navigation = [
   {
@@ -43,12 +44,7 @@ export default function TopMenu() {
 
   const { isPending, error, data } = useQuery({
     queryKey: ["user"],
-    queryFn: () => {
-      console.log("fetching user");
-      var thing = fetch("/api/user").then((res) => res.json());
-      console.log("got user", thing);
-      return thing;
-    },
+    queryFn: clientGetUser,
   });
 
   const toggleNavigation = () => {
@@ -71,15 +67,18 @@ export default function TopMenu() {
       }`}
     >
       <div className="flex items-center px-5 lg:px-7.5 xl:px-10 max-lg:py-4">
-        <Link className="block w-[12rem] xl:mr-8" href="/">
-          <Image
-            src="/logo-sm.jpg"
-            width={60}
-            height={60}
-            alt="Follow my course"
-            className="rounded-full object-cover"
-          />
-        </Link>
+        <div className="flex items-center gap-1">
+          <Link className="block w-[12rem] xl:mr-8" href="/">
+            <Image
+              src="/logo-sm.jpg"
+              width={60}
+              height={60}
+              alt="Follow my course"
+              className="rounded-full object-cover"
+            />
+          </Link>
+          <Link href="/update-profile">{data?.email}</Link>
+        </div>
 
         <nav
           className={`${

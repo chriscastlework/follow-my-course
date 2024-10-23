@@ -1,12 +1,8 @@
 import AuthButtons from "@/components/home/auth-screen/AuthButtons";
 import Link from "next/link";
-import { isAuthenticated } from "@/lib/auth/isAuthenticated";
-import BaseLayout from "@/components/layout/BaseLayout";
 import { Button } from "@/components/ui/button";
 
 export default async function Home() {
-  const { isLoggedIn } = await isAuthenticated();
-
   return (
     // <BaseLayout renderSidePanel={false} renderRightPanel={false}>
     <main>
@@ -36,17 +32,6 @@ export default async function Home() {
               thought possible!" - Successful Learner
             </p>
           </div>
-          {isLoggedIn ? (
-            <div className="mt-8 text-center">
-              <Button className="hover:bg-green-600 text-white px-6 py-3 rounded-full font-semibold transition-colors">
-                <Link href="/members">Go to Members Area</Link>
-              </Button>
-            </div>
-          ) : (
-            <div className="mt-8 text-center">
-              <AuthButtons />
-            </div>
-          )}
         </div>
         <div className="mt-12 text-center">
           <h2 className="text-2xl font-semibold mb-4">Featured Instructors</h2>

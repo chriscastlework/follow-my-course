@@ -7,6 +7,12 @@ import SubmitButton from "../SubmitButton";
 import { useState } from "react";
 import { eBookFormSchema } from "@/lib/validations";
 import { useRouter } from "next/navigation";
+import {
+  createEBook,
+  createEBookWithValidation,
+} from "@/lib/actions/eBook.actions";
+import FileUploader from "../FileUploader";
+import { FormField } from "../ui/form";
 
 const EBookForm = () => {
   const router = useRouter();
@@ -16,6 +22,7 @@ const EBookForm = () => {
     resolver: zodResolver(eBookFormSchema),
     defaultValues: {
       name: "",
+      file: [],
     },
   });
 
@@ -26,26 +33,10 @@ const EBookForm = () => {
   } = form;
 
   const onSubmit = async (data: z.infer<typeof eBookFormSchema>) => {
-    console.log("testing", data);
     setIsLoading(true);
-    try {
-      const formData = new FormData();
-      formData.append("name", data.name);
-      formData.append("file", data.file[0]);
-
-      const response = await fetch("/api/user", {
-        method: "POST",
-        body: formData,
-      });
-
-      //   if (ebook) {
-      //     router.push(`/ebooks/${ebook.id}`);
-      //   }
-    } catch (error) {
-      console.error("Failed to create ebook", error);
-    } finally {
-      setIsLoading(false);
-    }
+    await createEBookWithValidation({ file: data.file, name: data.name });
+    setIsLoading(false);
+    router.push(`/ebooks`);
   };
 
   return (
@@ -60,11 +51,20 @@ const EBookForm = () => {
           iconSrc="/assets/icons/user.svg"
           iconAlt="user"
         />
-        <div>
+
+        <FormField
+          control={form.control}
+          name="file"
+          render={({ field }) => (
+            <FileUploader fieldChange={field.onChange} mediaUrl="" />
+          )}
+        />
+        {/* <div>
           <label>Upload File:</label>
           <input {...register("file")} type="file" name="file" />
           {errors.file && <span>This field is required</span>}
-        </div>
+        </div> */}
+
         <SubmitButton isLoading={isLoading}>Submit</SubmitButton>
       </form>
     </FormProvider>
